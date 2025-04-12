@@ -168,7 +168,7 @@ int main()
         {
             load_matrices("multiplitest.txt", &matrix1, &matrix2, &expected_result);
             Matrix result = multipli_matrix(&matrix1, &matrix2); 
-            save_result("matrixtest.txt", &result, &expected_result);
+            save_result("multiplitest.txt", &result, &expected_result);
             free_matrix(result);
         }
         free_matrix(matrix1);

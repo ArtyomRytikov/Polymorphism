@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 #include "matrix.h"
 Matrix create_matrix(int size, MatrixType type) 
 {
@@ -178,4 +179,161 @@ Matrix scalar_multipli(const Matrix* matrix, double scalar)
         }
     }
     return result;
+}
+void load_matrices(const char *filename, Matrix *matrix1, Matrix *matrix2, Matrix *expected_result) 
+{
+    FILE *file = fopen(filename, "r");
+    char type[10];
+    int size;
+    fscanf(file, "%s", type);
+    fscanf(file, "%d", &size);
+    if (strcmp(type, "REAL") == 0) 
+    {
+        matrix1->type = REAL; 
+        matrix1->size = size; 
+        matrix1->data = malloc(size * size * sizeof(Real));
+    } 
+    else if (strcmp(type, "COMPLEX") == 0) 
+    {
+        matrix1->type = COMPLEX; 
+        matrix1->size = size;
+        matrix1->data = malloc(size * size * sizeof(Complex));
+    }
+    for (int i = 0; i < size; i++) 
+    {
+        for (int j = 0; j < size; j++) 
+        {
+            if (matrix1->type == REAL) 
+            {
+                fscanf(file, "%.2lf", &((Real *)matrix1->data)[i * size + j]);
+            } 
+            else 
+            {
+                fscanf(file, "%.2lf %.2lf", &((Complex *)matrix1->data)[i * size + j].re, &((Complex *)matrix1->data)[i * size + j].im);
+            }
+        }
+    }
+    fscanf(file, "%s", type);
+    fscanf(file, "%d", &size);
+    if (strcmp(type, "REAL") == 0) 
+    {
+        matrix2->type = REAL;
+        matrix2->size = size;
+        matrix2->data = malloc(size * size * sizeof(Real));
+    } 
+    else if (strcmp(type, "COMPLEX") == 0) 
+    {
+        matrix2->type = COMPLEX;
+        matrix2->size = size;
+        matrix2->data = malloc(size * size * sizeof(Complex));
+    }
+    for (int i = 0; i < size; i++) 
+    {
+        for (int j = 0; j < size; j++) 
+        {
+            if (matrix2->type == REAL) 
+            {
+                fscanf(file, "%.2lf", &((Real *)matrix2->data)[i * size + j]);
+            } 
+            else 
+            {
+                fscanf(file, "%.2lf %.2lf", &((Complex *)matrix2->data)[i * size + j].re, &((Complex *)matrix2->data)[i * size + j].im);
+            }
+        }
+    }
+    fscanf(file, "%s", type);
+    fscanf(file, "%d", &size);
+    
+    if (strcmp(type, "REAL") == 0) 
+    {
+        expected_result->type = REAL;
+        expected_result->size = size;
+        expected_result->data = malloc(size * size * sizeof(Real));
+    } 
+    else if (strcmp(type, "COMPLEX") == 0) 
+    {
+        expected_result->type = COMPLEX;
+        expected_result->size = size;
+        expected_result->data = malloc(size * size * sizeof(Complex));
+    }
+
+    for (int i = 0; i < size; i++) 
+    {
+        for (int j = 0; j < size; j++) 
+        {
+            if (expected_result->type == REAL) 
+            {
+                fscanf(file, "%.2lf", &((Real *)expected_result->data)[i * size + j]);
+            } else {
+                fscanf(file, "%.2lf %.2lf", &((Complex *)expected_result->data)[i * size + j].re, &((Complex *)expected_result->data)[i * size + j].im);
+            }
+        }
+    }
+    fclose(file);
+}
+void save_result(const char *filename, const Matrix *result, const Matrix *expected_result) 
+{
+    FILE *file = fopen(filename, "a");
+    fprintf(file, "\n");
+    fprintf(file, "RESULT\n");
+    if (result->type == REAL) 
+    {
+        fprintf(file, "REAL\n");
+    } 
+    else 
+    {
+        fprintf(file, "COMPLEX\n");
+    }
+    fprintf(file, "%d\n", result->size);
+    for (int i = 0; i < result->size; i++) 
+    {
+        for (int j = 0; j < result->size; j++) 
+        {
+            if (result->type == REAL) 
+            {
+                fprintf(file, "%.2lf ", ((Real *)result->data)[i * result->size + j]);
+            } 
+            else if (result->type == COMPLEX) 
+            {
+                fprintf(file, "%.2lf %.2lf ", ((Complex *)result->data)[i * result->size + j].re, ((Complex *)result->data)[i * result->size + j].im);
+            }
+        }
+        fprintf(file, "\n");
+    }
+    int res = 1;
+    for (int i = 0; i < result->size; i++) 
+    {
+        for (int j = 0; j < result->size; j++) 
+        {
+            if (result->type == REAL) 
+            {
+                if (((Real *)result->data)[i * result->size + j].value != ((Real *)expected_result->data)[i * expected_result->size + j].value) 
+                {
+                    res = 0;
+                    break;
+                }
+            } 
+            else if (result->type == COMPLEX) 
+            {
+                if (((Complex *)result->data)[i * result->size + j].re != ((Complex *)expected_result->data)[i * expected_result->size + j].re || ((Complex *)result->data)[i * result->size + j].im != ((Complex *)expected_result->data)[i * expected_result->size + j].im) 
+                {
+                    res = 0;
+                    break;
+                }
+            }
+        }
+    }
+    if (res) 
+    {
+        fprintf(file, "Ожидаемый и полученный результаты совпали, тест пройден \n");
+    } 
+    else 
+    {
+        fprintf(file, "Ожидаемый и полученный результаты не совпали, тест не пройден\n");
+    }
+    fclose(file);
+}
+void free_matrix(Matrix matrix) 
+{
+    free(matrix.data);
 }

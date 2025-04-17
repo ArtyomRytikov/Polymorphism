@@ -180,7 +180,7 @@ Matrix scalar_multipli(const Matrix* matrix, double scalar)
     }
     return result;
 }
-void load_matrices(const char *filename, Matrix *matrix1, Matrix *matrix2, Matrix *expected_result) 
+void load_two_matrices(const char *filename, Matrix *matrix1, Matrix *matrix2, Matrix *expected_result) 
 {
     FILE *file = fopen(filename, "r");
     char type[10];
@@ -336,4 +336,66 @@ void save_result(const char *filename, const Matrix *result, const Matrix *expec
 void free_matrix(Matrix matrix) 
 {
     free(matrix.data);
+}
+void load_one_matrix(const char *filename, Matrix *matrix, Matrix *expected_result) 
+{
+    FILE *file = fopen(filename, "r");
+    char type[10];
+    int size;
+    fscanf(file, "%s", type);
+    fscanf(file, "%d", &size);
+    if (strcmp(type, "REAL") == 0) 
+    {
+        matrix->type = REAL; 
+        matrix->size = size; 
+        matrix->data = malloc(size * size * sizeof(Real));
+    } 
+    else if (strcmp(type, "COMPLEX") == 0) 
+    {
+        matrix->type = COMPLEX; 
+        matrix->size = size;
+        matrix->data = malloc(size * size * sizeof(Complex));
+    }
+    for (int i = 0; i < size; i++) 
+    {
+        for (int j = 0; j < size; j++) 
+        {
+            if (matrix->type == REAL) 
+            {
+                fscanf(file, "%.2lf", &((Real *)matrix->data)[i * size + j]);
+            } 
+            else 
+            {
+                fscanf(file, "%.2lf %.2lf", &((Complex *)matrix->data)[i * size + j].re, &((Complex *)matrix->data)[i * size + j].im);
+            }
+        }
+    }
+    fscanf(file, "%s", type);
+    fscanf(file, "%d", &size);
+    if (strcmp(type, "REAL") == 0) 
+    {
+        expected_result->type = REAL;
+        expected_result->size = size;
+        expected_result->data = malloc(size * size * sizeof(Real));
+    } 
+    else if (strcmp(type, "COMPLEX") == 0) 
+    {
+        expected_result->type = COMPLEX;
+        expected_result->size = size;
+        expected_result->data = malloc(size * size * sizeof(Complex));
+    }
+
+    for (int i = 0; i < size; i++) 
+    {
+        for (int j = 0; j < size; j++) 
+        {
+            if (expected_result->type == REAL) 
+            {
+                fscanf(file, "%.2lf", &((Real *)expected_result->data)[i * size + j]);
+            } else {
+                fscanf(file, "%.2lf %.2lf", &((Complex *)expected_result->data)[i * size + j].re, &((Complex *)expected_result->data)[i * size + j].im);
+            }
+        }
+    }
+    fclose(file);
 }

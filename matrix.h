@@ -31,6 +31,7 @@ Matrix substr_matrix(const Matrix* matrix1, const Matrix* matrix2);
 Matrix multipli_matrix(const Matrix* matrix1, const Matrix* matrix2);
 Matrix trans_matrix(const Matrix* matrix);
 Matrix scalar_multipli(const Matrix* matrix, double scalar);
-void load_matrices(const char *filename, Matrix *matrix1, Matrix *matrix2, Matrix *expected_result);
+void load_two_matrices(const char *filename, Matrix *matrix1, Matrix *matrix2, Matrix *expected_result);
 void save_result(const char *filename, const Matrix *result, const Matrix *expected_result);
 void free_matrix(Matrix matrix);
+void load_one_matrix(const char *filename, Matrix *matrix, Matrix *expected_result);

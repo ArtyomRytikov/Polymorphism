@@ -144,31 +144,45 @@ int main()
         printf("1.Тестирование суммы\n");
         printf("2.Тестирование разности\n");
         printf("3.Тестирование произведения\n");
-        printf("4.Тестирование произведения на скаляр\n");
-        printf("1.Тестирование транспонирования\n");
+        printf("4.Тестирование транспонирования\n");
         printf("Выберети операцию над которой хотите провести тесты(введите число от 1-5): ");
         int test_number;
         scanf("%d", &test_number);
-        Matrix matrix1, matrix2, expected_result;
+        Matrix matrix, matrix1, matrix2, expected_result;
         if(test_number == 1)
         {
-            load_matrices("sumtest.txt", &matrix1, &matrix2, &expected_result);
+            load_two_matrices("sumtest.txt", &matrix1, &matrix2, &expected_result);
             Matrix result = sum_matrix(&matrix1, &matrix2); 
             save_result("sumtest.txt", &result, &expected_result);
             free_matrix(result);
         }
         if(test_number == 2)
         {
-            load_matrices("substrtest.txt", &matrix1, &matrix2, &expected_result);
+            load_two_matrices("substrtest.txt", &matrix1, &matrix2, &expected_result);
             Matrix result = substr_matrix(&matrix1, &matrix2); 
             save_result("substrtest.txt", &result, &expected_result);
             free_matrix(result);
         }
         if(test_number == 3)
         {
-            load_matrices("multiplitest.txt", &matrix1, &matrix2, &expected_result);
+            load_two_matrices("multiplitest.txt", &matrix1, &matrix2, &expected_result);
             Matrix result = multipli_matrix(&matrix1, &matrix2); 
             save_result("multiplitest.txt", &result, &expected_result);
+            free_matrix(result);
+        }
+        if(test_number == 5)
+        {
+            int scalar;
+            load_one_matrix("scalartest.exe", &matrix, &expected_result);
+            Matrix result = scalar_multipli(&matrix, scalar); 
+            save_result("scalartest.txt", &result, &expected_result);
+            free_matrix(result);
+        }
+        if(test_number == 4)
+        {
+            load_one_matrix("transtest.exe", &matrix, &expected_result);
+            Matrix result = trans_matrix(&matrix); 
+            save_result("transtest.txt", &result, &expected_result);
             free_matrix(result);
         }
         free_matrix(matrix1);
